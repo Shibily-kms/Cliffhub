@@ -6,7 +6,7 @@ const { checkSignUpData, sendOtp, verifyOtp, doSingUp, verifyUserNameOrEmail, se
 const { verifyUser } = require('../middlewares/verify-middleware')
 
 router.get('/', (req, res, next) => {
-    res.json('hello world')
+    res.json('server connection is OK')
 });
 
 // Sing Up And Otp
@@ -21,6 +21,6 @@ router.post('/new-password', setNewPassword);
 
 // Sign In
 router.post('/sign-in', doSingIn)
-router.get('/:api/get-user', verifyUser, getUserData)
+router.get('/user-details', verifyUser, getUserData)
 
 module.exports = router;

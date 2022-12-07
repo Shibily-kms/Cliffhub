@@ -2,6 +2,7 @@ const UserModel = require('../models/user-model')
 const { customId } = require('../helpers/customId-helpers')
 const bcrypt = require('bcrypt');
 const otpHelper = require('../helpers/otp-helpers')
+const { generateJWT } = require('../util/jwt')
 
 
 module.exports = {
@@ -118,19 +119,17 @@ module.exports = {
 
     doSingIn: async (req, res) => {
         try {
-
-
             let { name, password } = req.body
-
             let user = await UserModel.findOne({ $or: [{ userName: name }, { emailId: name }] })
             if (user) {
-
                 let status = await bcrypt.compare(password, user.password);
                 if (status) {
                     delete user._doc.password
+                    delete user._doc._id
 
                     res.status(201).json({
                         user: user,
+                        token: generateJWT(user.urId, user.userName),
                         status: true, message: 'Sing In Completed'
                     })
                 } else {
@@ -148,19 +147,20 @@ module.exports = {
     getUserData: async (req, res, next) => {
         try {
 
-            let urId = req.params.api
-            const user = await UserModel.findOne({ urId: urId })
+            let urId = req.user.urId
+            const user = await UserModel.findOne({ urId })
             delete user._doc.password
+            delete user._doc._id
+
+
             res.status(200).json({
                 user: user,
                 status: true,
-                message: 'User Verified'
+                message: 'User full details'
             })
 
         } catch (error) {
-
-            res.status(400).json({ status: false, error: true, message: 'Auth filed' })
-
+            res.status(400).json({ status: false, message: "User data can't access!" })
         }
     },
 }
