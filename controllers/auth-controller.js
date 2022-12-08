@@ -1,7 +1,7 @@
 const UserModel = require('../models/user-model')
-const { customId } = require('../helpers/customId-helpers')
+const { customId } = require('../util/customId')
 const bcrypt = require('bcrypt');
-const otpHelper = require('../helpers/otp-helpers')
+const otpHelper = require('../util/otp')
 const { generateJWT } = require('../util/jwt')
 
 
@@ -83,7 +83,7 @@ module.exports = {
     // Forgot Password
     verifyUserNameOrEmail: async (req, res, next) => {
         try {
-            let { name } = req.body
+            let { name } = req.body  // name = userName or Email
             await UserModel.findOne({ $or: [{ userName: name }, { emailId: name }] }).then((data) => {
                 if (data) {
                     res.status(201).json({ status: true, message: 'User is Available', emailId: data.emailId, mobile: data.mobile })
@@ -119,7 +119,7 @@ module.exports = {
 
     doSingIn: async (req, res) => {
         try {
-            let { name, password } = req.body
+            let { name, password } = req.body   // name = userName or Email
             let user = await UserModel.findOne({ $or: [{ userName: name }, { emailId: name }] })
             if (user) {
                 let status = await bcrypt.compare(password, user.password);
@@ -147,11 +147,11 @@ module.exports = {
     getUserData: async (req, res, next) => {
         try {
 
-            let urId = req.user.urId
+            const urId = req.user.urId
             const user = await UserModel.findOne({ urId })
+
             delete user._doc.password
             delete user._doc._id
-
 
             res.status(200).json({
                 user: user,

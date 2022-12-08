@@ -1,9 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const { verifyUser } = require('../middlewares/verify-middleware')
+const upload = require('../util/multer')
 
+// Controller Link
 const { checkSignUpData, sendOtp, verifyOtp, doSingUp, verifyUserNameOrEmail, setNewPassword,
     doSingIn, getUserData } = require('../controllers/auth-controller')
-const { verifyUser } = require('../middlewares/verify-middleware')
+const { doPost } = require('../controllers/post-controller')
+
+
 
 router.get('/', (req, res, next) => {
     res.json('server connection is OK')
@@ -22,5 +27,8 @@ router.post('/new-password', setNewPassword);
 // Sign In
 router.post('/sign-in', doSingIn)
 router.get('/user-details', verifyUser, getUserData)
+
+// Post
+router.post('/post', verifyUser, upload.single('file'), doPost)
 
 module.exports = router;

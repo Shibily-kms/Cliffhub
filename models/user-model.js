@@ -37,7 +37,13 @@ const userSchema = new mongoose.Schema({
     status: {
         type: String,
         default: 'Active',
-    }
+    },
+    savePost: [],
+    following: [],
+    followers: [],
+    location: String,
+    LifeStatus: String,
+    Website: String
 
 },
     {
